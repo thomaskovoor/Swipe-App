@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Swipekart</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_price">Product Price</string>
+    <string name="tax">Tax</string>
+    <string name="product_type">Product Type</string>
+    <string name="add_product_button">add product button</string>
+    <string name="add_product">add product</string>
+    <string name="selling_price">Selling Price</string>
+    <string name="enter_product_details">Enter Product Details</string>
+    <string name="tax_rate">Tax rate</string>
+    <string name="submit">Submit</string>
+    <string name="upload_image">Upload Image</string>
+</resources>
