@@ -32,23 +32,55 @@ import java.io.FileOutputStream
 import java.io.InputStream
 
 
+/**
+ * A Fragment representing the add product screen of the application.
+ *
+ * This Fragment provides a form to add a new product. It includes fields for the product's name, type, selling price, and tax rate. It also provides an option to upload an image for the product.
+ *
+ * @property productType The array of product types.
+ * @property progressBar The CustomProgressBar used to display a loading indicator.
+ * @property selectedImageUri The Uri of the selected image.
+ * @property filePath The path of the selected image file.
+ */
 class AddProductFragment : Fragment() {
+
+    /**
+     * The array of product types.
+     */
     var productType = arrayOf("Electronics", "Service", "Grocery", "Beauty", "Toys", "Other")
     private var progressBar: CustomProgressBar? = null
     var selectedImageUri: Uri? = null
     private var filePath: String? = null
 
+    /**
+     * The constant PICK_IMAGE_REQUEST.
+     */
     companion object {
         const val PICK_IMAGE_REQUEST = 1
     }
 
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * This method inflates the fragment_add_product layout, initializes the form fields, sets up the product type Spinner and the image upload button, and observes the apiLiveData from the ViewModel.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to. The fragment should not add the view itself, but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add_product, container, false)
+        /**
+         * Initialize form fields, Spinner, and buttons
+         * Set up image upload button and observe apiLiveData from ViewModel
+        */
 
         val productTypeSpinner: Spinner = view.findViewById(R.id.productTypeSp)
         val uploadImage: Button = view.findViewById(R.id.uploadImageBtn)
@@ -61,7 +93,9 @@ class AddProductFragment : Fragment() {
         val viewModel = ViewModelProvider(this)[AddProductViewModel::class.java]
         progressBar = CustomProgressBar(activity)
 
-
+       /**
+         * Set up product type Spinner
+        */
         val arrayAdapter = activity?.let {
             ArrayAdapter<String>(
                 it,
@@ -71,10 +105,11 @@ class AddProductFragment : Fragment() {
         }
         arrayAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         productTypeSpinner.adapter = arrayAdapter
-
+        /**
+         *  Select an item from the product type Spinner
+         */
         productTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                //Toast.makeText(context,productType[p2],Toast.LENGTH_LONG).show()
 
             }
 
@@ -83,6 +118,11 @@ class AddProductFragment : Fragment() {
             }
 
         }
+        /**
+         *  Set up image upload button
+         *  open gallery to select image
+         */
+
         uploadImage.setOnClickListener {
             val intent = Intent()
             intent.type = "image/*"
@@ -91,7 +131,11 @@ class AddProductFragment : Fragment() {
         }
 
 
-
+        /**
+         *  Set up submit button
+         *  validate form fields
+         *  call addProduct() method from ViewModel
+         */
 
         submitBtn.setOnClickListener {
             if (editTextProductName.text!!.isEmpty() || editTextProductTax.text!!.isEmpty()
@@ -122,6 +166,9 @@ class AddProductFragment : Fragment() {
             }
         }
 
+        /**
+         * Observe apiLiveData from ViewModel
+         */
         viewModel.apiLiveData.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Loading -> {
@@ -141,7 +188,9 @@ class AddProductFragment : Fragment() {
         }
         return view
     }
-
+    /**
+     * Displays a Snack bar with a success message when a product is added successfully.
+     */
     private fun showSnackBar() {
         view?.let { rootView ->
             val snackBar = Snackbar.make(rootView, "Data added Successfully", Snackbar.LENGTH_LONG)
@@ -162,30 +211,41 @@ class AddProductFragment : Fragment() {
             snackBar.show()
         }
     }
-
+    /**
+     * Handles the result of the image selection activity.
+     *
+     * This method is called when an image is selected from the device's storage. It sets the selectedImageUri and filePath properties based on the selected image.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(), allowing you to identify who this result came from.
+     * @param resultCode The integer result code returned by the child activity through its setResult().
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        /**
+         *  Handle image selection result
+          */
+
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             selectedImageUri = data.data
             val newFileName = "my_image"
             filePath = copyFileToInternalStorage(selectedImageUri!!, newFileName, requireContext())
-            Toast.makeText(requireActivity(), selectedImageUri.toString(), Toast.LENGTH_LONG).show()
+
         }
     }
 
-    private fun getPathFromUri(context: Context, uri: Uri): String? {
-        var cursor: Cursor? = null
-        try {
-            val proj = arrayOf(MediaStore.Images.Media.DATA)
-            cursor = context.contentResolver.query(uri, proj, null, null, null)
-            val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            cursor?.moveToFirst()
-            return column_index?.let { cursor!!.getString(it) }
-        } finally {
-            cursor?.close()
-        }
-    }
+    /**
+     * Copies the selected image file to the app's internal storage.
+     *
+     * This method is used to create a copy of the selected image file in the app's internal storage, so that it can be used later.
+     *
+     * @param uri The Uri of the selected image.
+     * @param newFileName The name of the new file.
+     * @param context The context.
+     *
+     * @return The path of the new file.
+     */
     private fun copyFileToInternalStorage(uri: Uri, newFileName: String, context: Context): String {
         val fileExtension = ".jpg" // Default to .jpg if you can't determine the file type
 
@@ -201,9 +261,21 @@ class AddProductFragment : Fragment() {
         return directory.absolutePath + "/" + newFileName + fileExtension
     }
 
+    /**
+     * Copies data from an InputStream to a FileOutputStream.
+     *
+     * This method is used to copy data from the InputStream (which is connected to the original image file) to the FileOutputStream (which is connected to the new file in the app's internal storage).
+     *
+     * @param src The InputStream connected to the original image file.
+     * @param dst The FileOutputStream connected to the new file.
+     */
     @Throws(Exception::class)
     private fun copy(src: InputStream, dst: FileOutputStream) {
         try {
+            /**
+             *  Copy the bits from instream to outstream
+              */
+
             val buf = ByteArray(1024)
             var len: Int
             while (src.read(buf).also { len = it } > 0) {

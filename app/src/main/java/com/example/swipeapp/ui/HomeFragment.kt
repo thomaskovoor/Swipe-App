@@ -19,6 +19,16 @@ import com.example.swipeapp.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButton
 
 
+/**
+ * A Fragment representing the home screen of the application.
+ *
+ * This Fragment displays a list of products and provides a search functionality to filter the products. It also provides a button to navigate to the AddProductFragment.
+ *
+ * @property progressBar The CustomProgressBar used to display a loading indicator.
+ * @property recyclerAdapter The adapter used for the RecyclerView.
+ * @property searchView The SearchView used for filtering the products.
+ * @property dataList The list of products.
+ */
 class HomeFragment : Fragment() {
 
     private var progressBar:CustomProgressBar?=null
@@ -26,12 +36,25 @@ class HomeFragment : Fragment() {
     private lateinit var searchView:SearchView
     private lateinit var dataList: List<ProductResponse>
 
+    /**
+     * This method inflates the fragment_home layout, initializes the RecyclerView and its adapter, sets up the SearchView, and observes the apiLiveData from the ViewModel.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to. The fragment should not add the view itself, but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+        /**
+         * Initialize ViewModel, ProgressBar, RecyclerView, and its adapter
+         * Set up SearchView and observe apiLiveData from ViewModel
+        */
 
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         progressBar = CustomProgressBar(activity)
@@ -92,7 +115,18 @@ class HomeFragment : Fragment() {
         return view
     }
 
+    /**
+    * Filters the products based on the given query.
+    *
+    * This method creates a new list of products that contain the query in their name or type, and updates the RecyclerView with the filtered list.
+    *
+    * @param p0 The query used to filter the products.
+    */
     private fun filterData(p0: String?) {
+        /**
+         *  Filter the products and update the RecyclerView
+          */
+
          val filteredList: ArrayList<ProductResponse> = ArrayList()
            for (product:ProductResponse in dataList){
                if(product.product_name.toLowerCase().contains(p0!!.toLowerCase())

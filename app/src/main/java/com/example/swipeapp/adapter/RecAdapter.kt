@@ -12,10 +12,22 @@ import com.example.swipeapp.dataclass.ProductResponse
 import com.squareup.picasso.Picasso
 
 
+
+/**
+ * RecAdapter is a RecyclerView.Adapter implementation for displaying a list of ProductResponse objects.
+ *
+ * @property context The context in which the adapter is being used.
+ * @property productList The list of ProductResponse objects to display in the RecyclerView.
+ */
 class RecAdapter( private val context: Context) : RecyclerView.Adapter<RecAdapter.ViewHolder>() {
 
     private var productList:MutableList<ProductResponse>?=null
 
+    /**
+     * Updates the data in the adapter.
+     *
+     * @param products The new list of ProductResponse objects to display.
+     */
     fun setData(products : MutableList<ProductResponse>){
         this.productList = products
     }
@@ -33,7 +45,16 @@ class RecAdapter( private val context: Context) : RecyclerView.Adapter<RecAdapte
            return productList?.size ?: 0
     }
 
-
+    /**
+     * ViewHolder class for RecAdapter.
+     *
+     * @property view The root view of the ViewHolder.
+     * @property productName The TextView displaying the product's name.
+     * @property productPrice The TextView displaying the product's price.
+     * @property productTax The TextView displaying the product's tax.
+     * @property productType The TextView displaying the product's type.
+     * @property productImage The ImageView displaying the product's image.
+     */
     class ViewHolder(view : View) : RecyclerView.ViewHolder(view) {
         private var productName = itemView.findViewById<TextView>(R.id.product_name)
         private var productPrice = itemView.findViewById<TextView>(R.id.product_price)
@@ -41,7 +62,16 @@ class RecAdapter( private val context: Context) : RecyclerView.Adapter<RecAdapte
         private var productType = itemView.findViewById<TextView>(R.id.product_type)
         private var productImage:ImageView = itemView.findViewById(R.id.product_image)
 
+        /**
+         * Binds a ProductResponse object to the ViewHolder.
+         *
+         * @param product The ProductResponse object to bind.
+         */
         fun bind(product : ProductResponse){
+            /** Implementation...
+            If there is an image, load it into the ImageView using Picasso.
+             else, set the ImageView to a default image.
+             */
             productName.text = product.product_name
             val text1 = "₹ "+product.price.toString()
             productPrice.text = text1
@@ -56,13 +86,6 @@ class RecAdapter( private val context: Context) : RecyclerView.Adapter<RecAdapte
             {
                 productImage.setImageResource(R.drawable.resource_package)
             }
-
         }
-
-
-
-
     }
-
-
     }
