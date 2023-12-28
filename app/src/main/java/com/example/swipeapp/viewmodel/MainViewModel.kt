@@ -7,16 +7,10 @@ import com.example.swipeapp.dataclass.ProductResponse
 import com.example.swipeapp.dataclass.Resource
 import com.example.swipeapp.network.ApiInterface
 import com.example.swipeapp.network.RetrofitInstance
-import com.itkacher.okprofiler.BuildConfig
-import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 class MainViewModel:ViewModel() {
     var _apiLiveData = MutableLiveData<Resource<List<ProductResponse>>>()
@@ -44,8 +38,7 @@ class MainViewModel:ViewModel() {
                 }
 
                 override fun onFailure(call: Call<List<ProductResponse>?>, t: Throwable) {
-                    _apiLiveData.postValue(Resource.Failure(true,0,"Network Error"))
-                 //   Toast.makeText(MainApplication.appContext,t.localizedMessage,Toast.LENGTH_SHORT).show()
+                    _apiLiveData.postValue(Resource.Failure(true,0,"Network Error"))                 //   Toast.makeText(MainApplication.appContext,t.localizedMessage,Toast.LENGTH_SHORT).show()
                 }
 
             })

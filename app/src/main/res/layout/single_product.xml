@@ -68,4 +68,13 @@
         android:layout_marginStart="16dp"/>
 
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/product_image"
+        android:layout_marginTop="10dp"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

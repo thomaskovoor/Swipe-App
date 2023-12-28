@@ -28,6 +28,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/product_name"
+        app:hintTextColor="#8A8A8A"
         app:layout_constraintTop_toBottomOf="@id/productDetails"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,6 +50,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/selling_price"
+        app:hintTextColor="#8A8A8A"
         app:layout_constraintTop_toBottomOf="@id/tilProductName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,6 +72,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/tax_rate"
+        app:hintTextColor="#8A8A8A"
         app:layout_constraintTop_toBottomOf="@id/tilSellingPrice"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -92,6 +95,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
+        android:backgroundTint="#8A8A8A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tilTaxRate"/>
@@ -106,7 +110,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:cornerRadius="15dp"
-        android:backgroundTint="@color/teal_200"
+        android:backgroundTint="#808080"
         app:layout_constraintTop_toBottomOf="@id/productTypeSp"/>
 
     <!-- Submit Button -->
@@ -115,7 +119,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:backgroundTint="#FFA351"
+        android:backgroundTint="#4A90E2"
         android:text="@string/submit"
         android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="parent"

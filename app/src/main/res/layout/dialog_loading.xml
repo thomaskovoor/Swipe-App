@@ -15,7 +15,8 @@
         <ProgressBar
             android:id="@+id/pb_common"
             android:layout_width="65dp"
-            android:layout_height="65dp" />
+            android:layout_height="65dp"
+            android:indeterminateTint="#4A90E2"/>
 
 
     </LinearLayout>

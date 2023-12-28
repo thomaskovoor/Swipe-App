@@ -1,13 +1,8 @@
 package com.example.swipeapp.viewmodel
 
-import android.app.Application
-import android.content.Context
-import android.database.Cursor
-import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.swipeapp.dataclass.AddProductResponse
 import com.example.swipeapp.dataclass.Resource
@@ -24,7 +19,7 @@ import retrofit2.Response
 import java.io.File
 
 
-class AddProductViewModel(application: Application) : AndroidViewModel(application) {
+class AddProductViewModel:ViewModel(){
 
     var _apiLiveData = MutableLiveData<Resource<AddProductResponse>>()
     val apiLiveData: MutableLiveData<Resource<AddProductResponse>> get() = _apiLiveData
@@ -34,21 +29,22 @@ class AddProductViewModel(application: Application) : AndroidViewModel(applicati
         productType: String,
         price: String,
         tax: String,
-        imageUri: Uri? = null
+        path: String?
     ) {
 
         _apiLiveData.postValue(Resource.Loading)
 
 
-        val realPath = imageUri?.let { getRealPathFromURI(it) }
-        val file = realPath?.let { File(it) }
+        var body: MultipartBody.Part? = null
 
-        val profileImage = file?.let {
-            MultipartBody.Part.createFormData(
-                name = "files",
-                filename = it.name,
-                body = it.asRequestBody()
-            )
+        if (path != null) {
+
+            val file = File(path)
+            if (file.exists()) {
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                body = MultipartBody.Part.createFormData("files", file.name, requestFile)
+            }
+
         }
 
 
@@ -61,7 +57,7 @@ class AddProductViewModel(application: Application) : AndroidViewModel(applicati
                 toRequestBody(productType),
                 toRequestBody(price),
                 toRequestBody(tax),
-                listOfNotNull(profileImage)
+                body
             )
                 .enqueue(
                     object : Callback<AddProductResponse> {
@@ -96,26 +92,9 @@ class AddProductViewModel(application: Application) : AndroidViewModel(applicati
 
     }
 
-    private val context: Context
-        get() = getApplication<Application>()
-
     private fun toRequestBody(value: String): RequestBody {
         return RequestBody.create("text/plain".toMediaTypeOrNull(), value)
     }
 
-
-    private fun getRealPathFromURI(contentURI: Uri): String? {
-        val result: String?
-        val cursor: Cursor? = context.contentResolver.query(contentURI, null, null, null, null)              //.query(contentURI, null, null, null, null)
-        if (cursor == null) { // Source is Dropbox or other similar local file path
-            result = contentURI.path
-        } else {
-            cursor.moveToFirst()
-            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-            result = cursor.getString(idx)
-            cursor.close()
-        }
-        return result
-    }
 
 }

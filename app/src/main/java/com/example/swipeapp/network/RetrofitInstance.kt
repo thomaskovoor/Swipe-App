@@ -9,24 +9,22 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitInstance {
     companion object{
-        fun getRetrofitInstance():Retrofit
-        {
+        fun getRetrofitInstance(): Retrofit {
             val builder = OkHttpClient.Builder()
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(60, TimeUnit.SECONDS)
             // .writeTimeout(60,TimeUnit.SECONDS)
-            if (BuildConfig.DEBUG)
-            { builder.addInterceptor(OkHttpProfilerInterceptor()) }
+            if (BuildConfig.DEBUG) {
+                builder.addInterceptor(OkHttpProfilerInterceptor())
+            }
             val client = builder.build()
-            val baseURL="https://app.getswipe.in/api/public/"
+            val baseURL = "https://app.getswipe.in/api/public/"
 
-            val retrofit = Retrofit.Builder()
+            return Retrofit.Builder()
                 .baseUrl(baseURL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-
-            return retrofit
 
         }
     }

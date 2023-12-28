@@ -1,7 +1,9 @@
 package com.example.swipeapp.ui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -25,13 +27,16 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import okhttp3.MultipartBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 class AddProductFragment : Fragment() {
-    var productType = arrayOf("Electronics", "Service", "Grocery", "Beauty", "Toys", "")
+    var productType = arrayOf("Electronics", "Service", "Grocery", "Beauty", "Toys", "Other")
     private var progressBar: CustomProgressBar? = null
     var selectedImageUri: Uri? = null
+    private var filePath: String? = null
 
     companion object {
         const val PICK_IMAGE_REQUEST = 1
@@ -45,9 +50,6 @@ class AddProductFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add_product, container, false)
 
-        var productName: TextInputLayout = view.findViewById(R.id.tilProductName)
-        var productSellingPrice: TextInputLayout = view.findViewById(R.id.tilSellingPrice)
-        var productTax: TextInputLayout = view.findViewById(R.id.tilTaxRate)
         val productTypeSpinner: Spinner = view.findViewById(R.id.productTypeSp)
         val uploadImage: Button = view.findViewById(R.id.uploadImageBtn)
         val submitBtn: Button = view.findViewById(R.id.submitBtn)
@@ -82,7 +84,10 @@ class AddProductFragment : Fragment() {
 
         }
         uploadImage.setOnClickListener {
-            pickImageFromGallery()
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
         }
 
 
@@ -95,33 +100,15 @@ class AddProductFragment : Fragment() {
                 Toast.makeText(context, "One or more fields empty!!", Toast.LENGTH_LONG).show()
             } else {
                 if (selectedImageUri != null) {
-                    MultipartBody.Builder().setType(MultipartBody.FORM).apply {
-                        addFormDataPart("product_name", editTextProductName.text.toString())
-                        addFormDataPart("product_type", productTypeSpinner.selectedItem.toString())
-                        addFormDataPart("price", editTextProductSellingPrice.text.toString())
-                        addFormDataPart("tax", editTextProductTax.text.toString())
-
-
-                    }.build()
-
 
                     viewModel.addProduct(
                         editTextProductName.text.toString(),
                         productTypeSpinner.selectedItem.toString(),
                         editTextProductSellingPrice.text.toString(),
                         editTextProductTax.text.toString(),
-                        selectedImageUri// Pass the MultipartBody parts
+                        path = filePath// Pass the MultipartBody parts
                     )
                 } else {
-                    MultipartBody.Builder().setType(MultipartBody.FORM).apply {
-                        addFormDataPart("product_name", editTextProductName.text.toString())
-                        addFormDataPart("product_type", productTypeSpinner.selectedItem.toString())
-                        addFormDataPart("price", editTextProductSellingPrice.text.toString())
-                        addFormDataPart("tax", editTextProductTax.text.toString())
-
-
-                    }.build()
-
 
                     viewModel.addProduct(
                         editTextProductName.text.toString(),
@@ -159,7 +146,7 @@ class AddProductFragment : Fragment() {
         view?.let { rootView ->
             val snackBar = Snackbar.make(rootView, "Data added Successfully", Snackbar.LENGTH_LONG)
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
-                .setBackgroundTint(Color.parseColor("#aaf255"))
+                .setBackgroundTint(Color.parseColor("#4A90E2"))
                 .setTextColor(Color.parseColor("#000000"))
                 .setAction("OK") {
                     // Dismiss
@@ -176,18 +163,55 @@ class AddProductFragment : Fragment() {
         }
     }
 
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             selectedImageUri = data.data
-
+            val newFileName = "my_image"
+            filePath = copyFileToInternalStorage(selectedImageUri!!, newFileName, requireContext())
             Toast.makeText(requireActivity(), selectedImageUri.toString(), Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun getPathFromUri(context: Context, uri: Uri): String? {
+        var cursor: Cursor? = null
+        try {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            cursor = context.contentResolver.query(uri, proj, null, null, null)
+            val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor?.moveToFirst()
+            return column_index?.let { cursor!!.getString(it) }
+        } finally {
+            cursor?.close()
+        }
+    }
+    private fun copyFileToInternalStorage(uri: Uri, newFileName: String, context: Context): String {
+        val fileExtension = ".jpg" // Default to .jpg if you can't determine the file type
+
+        val directory = context.filesDir
+        val newFile = File(directory, newFileName + fileExtension)
+
+        try {
+            copy(context.contentResolver.openInputStream(uri)!!, FileOutputStream(newFile))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return directory.absolutePath + "/" + newFileName + fileExtension
+    }
+
+    @Throws(Exception::class)
+    private fun copy(src: InputStream, dst: FileOutputStream) {
+        try {
+            val buf = ByteArray(1024)
+            var len: Int
+            while (src.read(buf).also { len = it } > 0) {
+                dst.write(buf, 0, len)
+            }
+        } finally {
+            src.close()
+            dst.close()
         }
     }
 

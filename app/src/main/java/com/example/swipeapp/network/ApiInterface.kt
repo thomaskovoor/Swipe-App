@@ -23,7 +23,7 @@ interface ApiInterface {
         @Part("product_type") productType: RequestBody,
         @Part("price") price: RequestBody,
         @Part("tax") tax: RequestBody,
-        @Part files: List<MultipartBody.Part>? = null
+        @Part files: MultipartBody.Part?
     ): Call<AddProductResponse>
 
 }

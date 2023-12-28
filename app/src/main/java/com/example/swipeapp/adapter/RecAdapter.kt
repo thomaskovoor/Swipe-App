@@ -1,7 +1,6 @@
 package com.example.swipeapp.adapter
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +50,7 @@ class RecAdapter( private val context: Context) : RecyclerView.Adapter<RecAdapte
             productType.text = product.product_type
 
             if(product.image.isNotEmpty()){
-                Picasso.get().load(product.image).resize(100,100).noFade().into(productImage)
+                Picasso.get().load(product.image).resize(50,50).noFade().into(productImage)
             }
             else
             {
